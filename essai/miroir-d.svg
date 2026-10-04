@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 420" width="200" height="420">
+<title>Essai de miroir D</title>
+<defs>
+<linearGradient id="tain" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dfe5e4"/><stop offset="1" stop-color="#7c888d"/></linearGradient>
+<linearGradient id="eclat" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<clipPath id="cintre"><path d="M20 400V120a80 80 0 0 1 160 0v280z"/></clipPath>
+</defs>
+<style>
+@keyframes passer { from { transform: translateX(-220px) skewX(-18deg); } to { transform: translateX(260px) skewX(-18deg); } }
+.eclat { animation: passer 3s ease-in-out infinite; }
+</style>
+<path d="M20 400V120a80 80 0 0 1 160 0v280z" fill="url(#tain)" stroke="#c9a24b" stroke-width="6"/>
+<g clip-path="url(#cintre)"><rect class="eclat" x="0" y="0" width="120" height="420" fill="url(#eclat)"/></g>
+<text x="100" y="250" text-anchor="middle" font-family="Georgia, serif" font-size="60" fill="#17245c">D</text>
+</svg>
