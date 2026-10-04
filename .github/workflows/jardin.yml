@@ -1,0 +1,54 @@
+# Le jardin du profil : chaque jour, relève le calendrier de contributions, redessine les six images
+# assets/jardin-*.svg et récrit le fragment du README compris entre <!-- jardin:debut --> et <!-- jardin:fin -->.
+#
+# Les commits sont signés « Jardin <jardin@mathis-fournier.com> », une adresse liée à aucun compte GitHub : ils ne
+# comptent donc pas comme des contributions, et le calendrier ne se nourrit pas de lui-même.
+name: Jardin
+
+on:
+  schedule:
+    # Une fois par jour, à 21 h 41 UTC : en fin de journée en France, pour que le jour en cours soit à peu près complet.
+    - cron: '41 21 * * *'
+  workflow_dispatch:
+
+# Le strict nécessaire : lire le dépôt et y pousser le commit du jardin.
+permissions:
+  contents: write
+
+concurrency:
+  group: jardin
+  cancel-in-progress: false
+
+jobs:
+  jardiner:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v5
+
+      - name: Installer Node (aucune dépendance à installer ensuite)
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Relever le calendrier et redessiner le jardin
+        run: node jardin/jardiner.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Commiter, seulement si le jardin a changé
+        env:
+          GIT_AUTHOR_NAME: Jardin
+          GIT_AUTHOR_EMAIL: jardin@mathis-fournier.com
+          GIT_COMMITTER_NAME: Jardin
+          GIT_COMMITTER_EMAIL: jardin@mathis-fournier.com
+        run: |
+          git add -- README.md assets/jardin-large-jour.svg assets/jardin-large-soir.svg assets/jardin-moyen-jour.svg assets/jardin-moyen-soir.svg assets/jardin-etroit-jour.svg assets/jardin-etroit-soir.svg
+          if git diff --cached --quiet; then
+            echo "Rien n'a changé : pas de commit."
+            exit 0
+          fi
+          git commit --message "Jardin : relevé du $(date --utc +%Y-%m-%d)"
+          # Si la branche a bougé pendant le relevé, on se replace au bout et on pousse une seconde fois.
+          git push || { git pull --rebase && git push; }
